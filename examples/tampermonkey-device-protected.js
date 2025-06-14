@@ -29,25 +29,21 @@
   let isInitialized = false
   let heartbeatTimer = null
 
-  // Device fingerprinting
+  // Device fingerprinting - focus on hardware characteristics
   function generateDeviceFingerprint() {
-    const canvas = document.createElement("canvas")
-    const ctx = canvas.getContext("2d")
-    ctx.textBaseline = "top"
-    ctx.font = "14px Arial"
-    ctx.fillText("Device fingerprint", 2, 2)
-
-    return {
-      userAgent: navigator.userAgent,
+    // Get hardware-specific information that's consistent across browsers
+    const hardwareInfo = {
       screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
       platform: navigator.platform,
-      cookieEnabled: navigator.cookieEnabled,
-      doNotTrack: navigator.doNotTrack,
-      deviceName: `${navigator.platform} - ${navigator.userAgent.split(")")[0]})`,
-      canvasFingerprint: canvas.toDataURL(),
+      language: navigator.language,
+      hardwareConcurrency: navigator.hardwareConcurrency || "unknown",
+      deviceMemory: navigator.deviceMemory || "unknown",
+      // Remove browser-specific data
+      deviceName: `${navigator.platform} Device`,
     }
+
+    return hardwareInfo
   }
 
   // Initialize the script
@@ -124,22 +120,31 @@
 
         const errorMessage = response.error || "Unknown error"
 
-        // Handle specific device-related errors
+        // Handle specific device-related errors with better messages
         if (errorMessage.includes("Device limit reached")) {
           GM_notification({
-            title: "🚫 Device Limit Reached",
-            text: "Maximum number of devices exceeded. Please logout from other devices.",
+            title: "🚫 محدودیت دستگاه",
+            text: "حداکثر تعداد دستگاه‌های مجاز تجاوز شده. لطفاً از دستگاه‌های دیگر خارج شوید.",
             timeout: 8000,
           })
-        } else if (errorMessage.includes("Session already active")) {
+        } else if (
+          errorMessage.includes("Session already active") ||
+          errorMessage.includes("اشتراک شما در دستگاه دیگری فعال است")
+        ) {
           GM_notification({
-            title: "🚫 Already Active Elsewhere",
-            text: "Your subscription is active on another device. Please logout there first.",
+            title: "🚫 فعال در دستگاه دیگر",
+            text: "اشتراک شما در دستگاه دیگری فعال است. لطفاً ابتدا از آنجا خارج شوید.",
             timeout: 8000,
+          })
+        } else if (errorMessage.includes("دستگاه ثبت نشده")) {
+          GM_notification({
+            title: "❌ دستگاه تأیید نشده",
+            text: "این دستگاه برای استفاده از اشتراک تأیید نشده است.",
+            timeout: 5000,
           })
         } else {
           GM_notification({
-            title: "❌ Access Denied",
+            title: "❌ دسترسی مسدود",
             text: errorMessage,
             timeout: 5000,
           })

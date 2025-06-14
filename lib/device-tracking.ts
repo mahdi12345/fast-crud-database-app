@@ -22,16 +22,18 @@ export interface SessionInfo {
   expiresAt: Date
 }
 
-// Generate device fingerprint from browser data
+// Generate device fingerprint from browser data (hardware-focused)
 export function generateDeviceFingerprint(browserData: any): string {
+  // Focus on hardware/system characteristics that are consistent across browsers
   const components = [
-    browserData.userAgent || "",
     browserData.screen || "",
     browserData.timezone || "",
-    browserData.language || "",
     browserData.platform || "",
-    browserData.cookieEnabled || "",
-    browserData.doNotTrack || "",
+    // Remove browser-specific data like userAgent, cookieEnabled, doNotTrack
+    browserData.language || "",
+    // Add hardware-specific data if available
+    browserData.hardwareConcurrency || navigator.hardwareConcurrency || "",
+    browserData.deviceMemory || navigator.deviceMemory || "",
   ]
 
   const fingerprint = crypto.createHash("sha256").update(components.join("|")).digest("hex")
@@ -120,7 +122,7 @@ export async function registerDevice(
   }
 }
 
-// Create active session
+// Create active session - allow multiple browsers on same device
 export async function createSession(
   clientId: number,
   deviceFingerprint: string,
@@ -136,32 +138,30 @@ export async function createSession(
     `
 
     if (devices.length === 0) {
-      return { success: false, error: "Device not registered or inactive" }
+      return { success: false, error: "دستگاه ثبت نشده یا غیرفعال است" }
     }
 
     // Clean up expired sessions
     await cleanupExpiredSessions()
 
-    // Check for existing active sessions on other devices
-    const activeSessions = await sql`
+    // Check for existing active sessions on OTHER devices (different fingerprints)
+    const activeSessionsOtherDevices = await sql`
       SELECT COUNT(*) as count 
       FROM active_sessions 
-      WHERE client_id = ${clientId} AND device_fingerprint != ${deviceFingerprint}
+      WHERE client_id = ${clientId} 
+      AND device_fingerprint != ${deviceFingerprint}
       AND expires_at > CURRENT_TIMESTAMP
     `
 
-    if (activeSessions[0].count > 0) {
+    if (activeSessionsOtherDevices[0].count > 0) {
       return {
         success: false,
-        error: "Session already active on another device. Please logout from other devices first.",
+        error: "اشتراک شما در دستگاه دیگری فعال است. لطفاً ابتدا از دستگاه دیگر خارج شوید.",
       }
     }
 
-    // Deactivate any existing sessions for this device
-    await sql`
-      DELETE FROM active_sessions 
-      WHERE client_id = ${clientId} AND device_fingerprint = ${deviceFingerprint}
-    `
+    // Allow multiple sessions on the SAME device (different browsers)
+    // Just create a new session without checking existing sessions on same device
 
     // Create new session (expires in 24 hours)
     const sessionToken = generateSessionToken()
@@ -181,7 +181,7 @@ export async function createSession(
     return { success: true, sessionToken }
   } catch (error) {
     console.error("Error creating session:", error)
-    return { success: false, error: "Failed to create session" }
+    return { success: false, error: "ایجاد جلسه با خطا مواجه شد" }
   }
 }
 

@@ -127,16 +127,23 @@ export async function POST(request: Request) {
     // Register or update device
     const deviceRegistration = await registerDevice(client.id, {
       fingerprint: deviceFingerprint,
-      deviceName: device_data.deviceName || "Unknown Device",
+      deviceName: device_data.deviceName || "دستگاه ناشناس",
       browserInfo: device_data,
       ipAddress: ipAddress,
     })
 
     if (!deviceRegistration.success) {
+      let errorMessage = deviceRegistration.error || "خطا در ثبت دستگاه"
+
+      // Translate common errors to Persian
+      if (errorMessage.includes("Device limit reached")) {
+        errorMessage = "حداکثر تعداد دستگاه‌های مجاز تجاوز شده است"
+      }
+
       return NextResponse.json(
         {
           valid: false,
-          error: deviceRegistration.error,
+          error: errorMessage,
         },
         { status: 403 },
       )
@@ -146,10 +153,12 @@ export async function POST(request: Request) {
     const sessionCreation = await createSession(client.id, deviceFingerprint, subscription_code, ipAddress, userAgent)
 
     if (!sessionCreation.success) {
+      const errorMessage = sessionCreation.error || "خطا در ایجاد جلسه"
+
       return NextResponse.json(
         {
           valid: false,
-          error: sessionCreation.error,
+          error: errorMessage,
         },
         { status: 403 },
       )
