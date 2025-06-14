@@ -89,6 +89,17 @@ export async function togglePlanStatus(id: number): Promise<void> {
   revalidatePath("/admin/plans")
 }
 
+export async function deleteSubscriptionPlan(id: number): Promise<void> {
+  await requireRole(UserRole.ADMIN)
+
+  await sql`
+    DELETE FROM subscription_plans 
+    WHERE id = ${id}
+  `
+
+  revalidatePath("/admin/plans")
+}
+
 // Clients Actions
 export async function getClients(): Promise<Client[]> {
   await requireRole(UserRole.ADMIN)
