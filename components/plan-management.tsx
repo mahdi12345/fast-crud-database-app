@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, ToggleLeft, ToggleRight, Edit, Trash2 } from "lucide-react"
+import { Plus, ToggleLeft, ToggleRight, Edit, Trash2, RefreshCw } from "lucide-react"
 import { formatCurrency, formatDuration } from "@/lib/subscription-utils"
 import type { SubscriptionPlan } from "@/lib/subscription-types"
 
@@ -47,6 +47,7 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
   const [isCreating, setIsCreating] = useState(false)
   const [isUpdating, setIsUpdating] = useState<number | null>(null)
   const [isDeleting, setIsDeleting] = useState<number | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null)
@@ -54,14 +55,18 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
   const [editFeatures, setEditFeatures] = useState<string[]>([""])
 
   const refreshPlans = async () => {
+    setIsRefreshing(true)
     try {
       const response = await fetch("/api/admin/plans")
       if (response.ok) {
         const newPlans = await response.json()
         setPlans(newPlans)
+        console.log("Plans refreshed:", newPlans)
       }
     } catch (error) {
       console.error("Error refreshing plans:", error)
+    } finally {
+      setIsRefreshing(false)
     }
   }
 
@@ -135,7 +140,7 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
       features: editFeatures.filter((f) => f.trim() !== ""),
     }
 
-    console.log("Updating plan with data:", data) // Debug log
+    console.log("Updating plan with data:", data)
 
     try {
       const response = await fetch("/api/admin/plans/update", {
@@ -145,7 +150,7 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
       })
 
       const result = await response.json()
-      console.log("Update response:", result) // Debug log
+      console.log("Update response:", result)
 
       if (!response.ok) {
         toast({
@@ -164,7 +169,7 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
         await refreshPlans()
       }
     } catch (error) {
-      console.error("Update error:", error) // Debug log
+      console.error("Update error:", error)
       toast({
         title: "خطا",
         description: "به‌روزرسانی طرح ناموفق بود",
@@ -291,81 +296,87 @@ export default function PlanManagement({ plans: initialPlans }: PlanManagementPr
             <CardTitle>طرح‌های اشتراک</CardTitle>
             <CardDescription>مدیریت طرح‌های اشتراک و قیمت‌گذاری</CardDescription>
           </div>
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 ml-2" />
-                طرح جدید
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>ایجاد طرح جدید</DialogTitle>
-                <DialogDescription>طرح اشتراک جدیدی با قیمت‌گذاری و ویژگی‌ها ایجاد کنید</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreatePlan}>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">نام طرح *</Label>
-                    <Input id="name" name="name" required placeholder="مثال: طرح پایه" />
-                  </div>
-                  <div>
-                    <Label htmlFor="description">توضیحات</Label>
-                    <Textarea id="description" name="description" placeholder="توضیحات طرح" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={refreshPlans} disabled={isRefreshing}>
+              <RefreshCw className={`h-4 w-4 ml-2 ${isRefreshing ? "animate-spin" : ""}`} />
+              {isRefreshing ? "در حال بارگذاری..." : "بروزرسانی"}
+            </Button>
+            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 ml-2" />
+                  طرح جدید
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>ایجاد طرح جدید</DialogTitle>
+                  <DialogDescription>طرح اشتراک جدیدی با قیمت‌گذاری و ویژگی‌ها ایجاد کنید</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleCreatePlan}>
+                  <div className="space-y-4">
                     <div>
-                      <Label htmlFor="price">قیمت *</Label>
-                      <Input id="price" name="price" type="number" step="0.01" required placeholder="29.99" />
+                      <Label htmlFor="name">نام طرح *</Label>
+                      <Input id="name" name="name" required placeholder="مثال: طرح پایه" />
                     </div>
                     <div>
-                      <Label htmlFor="duration_days">مدت زمان (روز) *</Label>
-                      <Input id="duration_days" name="duration_days" type="number" required placeholder="30" />
+                      <Label htmlFor="description">توضیحات</Label>
+                      <Textarea id="description" name="description" placeholder="توضیحات طرح" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="price">قیمت *</Label>
+                        <Input id="price" name="price" type="number" step="0.01" required placeholder="29.99" />
+                      </div>
+                      <div>
+                        <Label htmlFor="duration_days">مدت زمان (روز) *</Label>
+                        <Input id="duration_days" name="duration_days" type="number" required placeholder="30" />
+                      </div>
+                      <div>
+                        <Label htmlFor="max_devices">حداکثر دستگاه *</Label>
+                        <Input
+                          id="max_devices"
+                          name="max_devices"
+                          type="number"
+                          min="1"
+                          required
+                          placeholder="1"
+                          defaultValue="1"
+                        />
+                      </div>
                     </div>
                     <div>
-                      <Label htmlFor="max_devices">حداکثر دستگاه *</Label>
-                      <Input
-                        id="max_devices"
-                        name="max_devices"
-                        type="number"
-                        min="1"
-                        required
-                        placeholder="1"
-                        defaultValue="1"
-                      />
+                      <Label>ویژگی‌ها</Label>
+                      <div className="space-y-2">
+                        {features.map((feature, index) => (
+                          <div key={index} className="flex gap-2">
+                            <Input
+                              value={feature}
+                              onChange={(e) => updateFeature(index, e.target.value)}
+                              placeholder="توضیح ویژگی"
+                            />
+                            {features.length > 1 && (
+                              <Button type="button" variant="outline" onClick={() => removeFeature(index)}>
+                                حذف
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button type="button" variant="outline" onClick={addFeature}>
+                          افزودن ویژگی
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <Label>ویژگی‌ها</Label>
-                    <div className="space-y-2">
-                      {features.map((feature, index) => (
-                        <div key={index} className="flex gap-2">
-                          <Input
-                            value={feature}
-                            onChange={(e) => updateFeature(index, e.target.value)}
-                            placeholder="توضیح ویژگی"
-                          />
-                          {features.length > 1 && (
-                            <Button type="button" variant="outline" onClick={() => removeFeature(index)}>
-                              حذف
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      <Button type="button" variant="outline" onClick={addFeature}>
-                        افزودن ویژگی
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <DialogFooter className="mt-6">
-                  <Button type="submit" disabled={isCreating}>
-                    {isCreating ? "در حال ایجاد..." : "ایجاد طرح"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <DialogFooter className="mt-6">
+                    <Button type="submit" disabled={isCreating}>
+                      {isCreating ? "در حال ایجاد..." : "ایجاد طرح"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

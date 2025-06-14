@@ -17,63 +17,48 @@ export async function PUT(request: Request) {
     }
 
     const requestData = await request.json()
-    console.log("Received update data:", requestData) // Debug log
+    console.log("Received update data:", requestData)
 
-    const { id, ...updateData } = requestData
+    const { id, name, description, price, duration_days, max_devices, features } = requestData
 
     if (!id) {
       return NextResponse.json({ error: "Plan ID is required" }, { status: 400 })
     }
 
-    // Build the update query dynamically
-    const updates = []
-    const values = []
-
-    if (updateData.name) {
-      updates.push(`name = $${values.length + 1}`)
-      values.push(updateData.name)
-    }
-    if (updateData.description !== undefined) {
-      updates.push(`description = $${values.length + 1}`)
-      values.push(updateData.description || null)
-    }
-    if (updateData.price !== undefined && !isNaN(updateData.price)) {
-      updates.push(`price = $${values.length + 1}`)
-      values.push(Number(updateData.price))
-    }
-    if (updateData.duration_days !== undefined && !isNaN(updateData.duration_days)) {
-      updates.push(`duration_days = $${values.length + 1}`)
-      values.push(Number(updateData.duration_days))
-    }
-    if (updateData.max_devices !== undefined && !isNaN(updateData.max_devices)) {
-      updates.push(`max_devices = $${values.length + 1}`)
-      values.push(Number(updateData.max_devices))
-    }
-    if (updateData.features && Array.isArray(updateData.features)) {
-      updates.push(`features = $${values.length + 1}`)
-      values.push(JSON.stringify(updateData.features))
+    // First, check if the plan exists
+    const existingPlan = await sql`SELECT id FROM subscription_plans WHERE id = ${id}`
+    if (existingPlan.length === 0) {
+      return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    if (updates.length === 0) {
-      return NextResponse.json({ error: "No valid data to update" }, { status: 400 })
-    }
-
-    updates.push(`updated_at = CURRENT_TIMESTAMP`)
-    values.push(id)
-
-    const query = `
+    // Update the plan with all fields
+    const result = await sql`
       UPDATE subscription_plans 
-      SET ${updates.join(", ")}
-      WHERE id = $${values.length}
+      SET 
+        name = ${name},
+        description = ${description || null},
+        price = ${Number(price)},
+        duration_days = ${Number(duration_days)},
+        max_devices = ${Number(max_devices)},
+        features = ${JSON.stringify(features || [])},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
     `
 
-    console.log("Executing query:", query) // Debug log
-    console.log("With values:", values) // Debug log
+    console.log("Update executed, result:", result)
 
-    const result = await sql.unsafe(query, values)
-    console.log("Update result:", result) // Debug log
+    // Verify the update by fetching the updated plan
+    const updatedPlan = await sql`
+      SELECT * FROM subscription_plans WHERE id = ${id}
+    `
 
-    return NextResponse.json({ success: true, message: "Plan updated successfully" })
+    console.log("Updated plan from DB:", updatedPlan[0])
+
+    return NextResponse.json({
+      success: true,
+      message: "Plan updated successfully",
+      plan: updatedPlan[0],
+    })
   } catch (error) {
     console.error("Error updating plan:", error)
     return NextResponse.json(
