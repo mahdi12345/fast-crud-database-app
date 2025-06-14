@@ -45,6 +45,7 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
       description: (formData.get("description") as string) || undefined,
       price: Number(formData.get("price")),
       duration_days: Number(formData.get("duration_days")),
+      max_devices: Number(formData.get("max_devices")),
       features: features.filter((f) => f.trim() !== ""),
     }
 
@@ -59,14 +60,14 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to create plan",
+          title: "خطا",
+          description: result.error || "ایجاد طرح ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Plan created successfully",
+          title: "موفقیت",
+          description: "طرح با موفقیت ایجاد شد",
         })
         setCreateDialogOpen(false)
         setFeatures([""])
@@ -74,8 +75,8 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create plan",
+        title: "خطا",
+        description: "ایجاد طرح ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -97,21 +98,21 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to update plan status",
+          title: "خطا",
+          description: result.error || "به‌روزرسانی وضعیت طرح ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Plan status updated",
+          title: "موفقیت",
+          description: "وضعیت طرح به‌روزرسانی شد",
         })
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update plan status",
+        title: "خطا",
+        description: "به‌روزرسانی وضعیت طرح ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -138,67 +139,79 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Subscription Plans</CardTitle>
-            <CardDescription>Manage subscription plans and pricing</CardDescription>
+            <CardTitle>طرح‌های اشتراک</CardTitle>
+            <CardDescription>مدیریت طرح‌های اشتراک و قیمت‌گذاری</CardDescription>
           </div>
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                New Plan
+                <Plus className="h-4 w-4 ml-2" />
+                طرح جدید
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Create New Plan</DialogTitle>
-                <DialogDescription>Create a new subscription plan with pricing and features</DialogDescription>
+                <DialogTitle>ایجاد طرح جدید</DialogTitle>
+                <DialogDescription>طرح اشتراک جدیدی با قیمت‌گذاری و ویژگی‌ها ایجاد کنید</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreatePlan}>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Plan Name *</Label>
-                    <Input id="name" name="name" required placeholder="e.g., Basic Plan" />
+                    <Label htmlFor="name">نام طرح *</Label>
+                    <Input id="name" name="name" required placeholder="مثال: طرح پایه" />
                   </div>
                   <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea id="description" name="description" placeholder="Plan description" />
+                    <Label htmlFor="description">توضیحات</Label>
+                    <Textarea id="description" name="description" placeholder="توضیحات طرح" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="price">Price *</Label>
+                      <Label htmlFor="price">قیمت *</Label>
                       <Input id="price" name="price" type="number" step="0.01" required placeholder="29.99" />
                     </div>
                     <div>
-                      <Label htmlFor="duration_days">Duration (Days) *</Label>
+                      <Label htmlFor="duration_days">مدت زمان (روز) *</Label>
                       <Input id="duration_days" name="duration_days" type="number" required placeholder="30" />
+                    </div>
+                    <div>
+                      <Label htmlFor="max_devices">حداکثر دستگاه *</Label>
+                      <Input
+                        id="max_devices"
+                        name="max_devices"
+                        type="number"
+                        min="1"
+                        required
+                        placeholder="1"
+                        defaultValue="1"
+                      />
                     </div>
                   </div>
                   <div>
-                    <Label>Features</Label>
+                    <Label>ویژگی‌ها</Label>
                     <div className="space-y-2">
                       {features.map((feature, index) => (
                         <div key={index} className="flex gap-2">
                           <Input
                             value={feature}
                             onChange={(e) => updateFeature(index, e.target.value)}
-                            placeholder="Feature description"
+                            placeholder="توضیح ویژگی"
                           />
                           {features.length > 1 && (
                             <Button type="button" variant="outline" onClick={() => removeFeature(index)}>
-                              Remove
+                              حذف
                             </Button>
                           )}
                         </div>
                       ))}
                       <Button type="button" variant="outline" onClick={addFeature}>
-                        Add Feature
+                        افزودن ویژگی
                       </Button>
                     </div>
                   </div>
                 </div>
                 <DialogFooter className="mt-6">
                   <Button type="submit" disabled={isCreating}>
-                    {isCreating ? "Creating..." : "Create Plan"}
+                    {isCreating ? "در حال ایجاد..." : "ایجاد طرح"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -211,20 +224,21 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Features</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>نام</TableHead>
+                <TableHead>قیمت</TableHead>
+                <TableHead>مدت زمان</TableHead>
+                <TableHead>حداکثر دستگاه</TableHead>
+                <TableHead>ویژگی‌ها</TableHead>
+                <TableHead>وضعیت</TableHead>
+                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>عملیات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {plans.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    No plans found. Create your first plan to get started.
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    هیچ طرحی یافت نشد. اولین طرح خود را ایجاد کنید.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -240,6 +254,7 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
                     </TableCell>
                     <TableCell className="font-medium">{formatCurrency(plan.price)}</TableCell>
                     <TableCell>{formatDuration(plan.duration_days)}</TableCell>
+                    <TableCell>{plan.max_devices || 1}</TableCell>
                     <TableCell>
                       <div className="max-w-xs">
                         {plan.features.slice(0, 2).map((feature, index) => (
@@ -248,16 +263,16 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
                           </div>
                         ))}
                         {plan.features.length > 2 && (
-                          <div className="text-sm text-muted-foreground">+{plan.features.length - 2} more</div>
+                          <div className="text-sm text-muted-foreground">+{plan.features.length - 2} بیشتر</div>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={plan.is_active ? "default" : "secondary"}>
-                        {plan.is_active ? "Active" : "Inactive"}
+                        {plan.is_active ? "فعال" : "غیرفعال"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{new Date(plan.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(plan.created_at).toLocaleDateString("fa-IR")}</TableCell>
                     <TableCell>
                       <Button
                         variant="outline"

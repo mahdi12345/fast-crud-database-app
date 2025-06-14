@@ -26,8 +26,8 @@ export async function createSubscriptionPlan(data: CreatePlanData): Promise<void
   await requireRole(UserRole.ADMIN)
 
   await sql`
-    INSERT INTO subscription_plans (name, description, price, duration_days, features)
-    VALUES (${data.name}, ${data.description || null}, ${data.price}, ${data.duration_days}, ${JSON.stringify(data.features)})
+    INSERT INTO subscription_plans (name, description, price, duration_days, features, max_devices)
+    VALUES (${data.name}, ${data.description || null}, ${data.price}, ${data.duration_days}, ${JSON.stringify(data.features)}, ${data.max_devices || 1})
   `
 
   revalidatePath("/admin/plans")
@@ -146,7 +146,8 @@ export async function getSubscriptions(): Promise<Subscription[]> {
       c.name as client_name,
       c.email as client_email,
       p.name as plan_name,
-      p.price as plan_price
+      p.price as plan_price,
+      COALESCE(s.max_devices, p.max_devices, 1) as max_devices
     FROM subscriptions s
     JOIN clients c ON s.client_id = c.id
     JOIN subscription_plans p ON s.plan_id = p.id

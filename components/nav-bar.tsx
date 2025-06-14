@@ -3,13 +3,8 @@ import { Button } from "@/components/ui/button"
 import UserMenu from "./user-menu"
 import { getSession } from "@/lib/auth-utils"
 import { isAdmin } from "@/lib/roles"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 
 export default async function NavBar() {
   const session = await getSession()
@@ -19,7 +14,7 @@ export default async function NavBar() {
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="text-xl font-bold">
-          Brand Manager
+          مدیر برندها
         </Link>
         <nav className="flex items-center gap-4">
           {userIsAdmin && (
@@ -27,22 +22,25 @@ export default async function NavBar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
-                    Admin
-                    <ChevronDown className="h-4 w-4 ml-1" />
+                    مدیریت
+                    <ChevronDown className="h-4 w-4 mr-1" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">User Management</Link>
+                    <Link href="/admin">مدیریت کاربران</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/subscriptions">Subscriptions</Link>
+                    <Link href="/admin/subscriptions">اشتراک‌ها</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/clients">Clients</Link>
+                    <Link href="/admin/clients">مشتریان</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/plans">Plans</Link>
+                    <Link href="/admin/plans">طرح‌ها</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/devices">دستگاه‌ها</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -53,10 +51,10 @@ export default async function NavBar() {
           ) : (
             <div className="flex gap-4">
               <Link href="/login">
-                <Button variant="outline">Login</Button>
+                <Button variant="outline">ورود</Button>
               </Link>
               <Link href="/register">
-                <Button>Register</Button>
+                <Button>ثبت‌نام</Button>
               </Link>
             </div>
           )}

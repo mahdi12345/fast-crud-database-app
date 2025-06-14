@@ -26,7 +26,7 @@ export default function RegisterForm() {
     const confirmPassword = formData.get("confirmPassword") as string
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError("رمزهای عبور مطابقت ندارند")
       setIsLoading(false)
       return
     }
@@ -44,7 +44,7 @@ export default function RegisterForm() {
       const registerResult = await registerResponse.json()
 
       if (!registerResponse.ok) {
-        setError(registerResult.error || "Registration failed")
+        setError(registerResult.error || "ثبت‌نام ناموفق بود")
         setIsLoading(false)
         return
       }
@@ -71,7 +71,7 @@ export default function RegisterForm() {
       router.push("/")
       router.refresh()
     } catch (error) {
-      setError("Something went wrong. Please try again.")
+      setError("مشکلی پیش آمد. لطفاً دوباره تلاش کنید.")
       console.error(error)
       setIsLoading(false)
     }
@@ -81,28 +81,28 @@ export default function RegisterForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>}
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">نام</Label>
         <Input id="name" name="name" required />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">ایمیل</Label>
         <Input id="email" name="email" type="email" required />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">رمز عبور</Label>
         <Input id="password" name="password" type="password" required />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword">تأیید رمز عبور</Label>
         <Input id="confirmPassword" name="confirmPassword" type="password" required />
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Creating account..." : "Register"}
+        {isLoading ? "در حال ایجاد حساب..." : "ثبت‌نام"}
       </Button>
       <div className="text-center text-sm">
-        Already have an account?{" "}
+        قبلاً حساب کاربری دارید؟{" "}
         <Link href="/login" className="text-blue-600 hover:underline">
-          Login
+          ورود
         </Link>
       </div>
     </form>

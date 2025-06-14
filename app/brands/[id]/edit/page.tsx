@@ -15,7 +15,7 @@ export default async function EditBrandPage({ params }: { params: { id: string }
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">Edit Brand</h1>
+      <h1 className="text-3xl font-bold mb-8">ویرایش برند</h1>
       <BrandForm brand={brand} />
     </div>
   )

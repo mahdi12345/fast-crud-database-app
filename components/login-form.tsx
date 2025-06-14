@@ -30,7 +30,7 @@ export default function LoginForm() {
       const result = await response.json()
 
       if (!response.ok) {
-        setError(result.error || "Invalid email or password")
+        setError(result.error || "ایمیل یا رمز عبور نامعتبر است")
         setIsPending(false)
         return
       }
@@ -39,7 +39,7 @@ export default function LoginForm() {
       router.push("/")
       router.refresh()
     } catch (err) {
-      setError("An unexpected error occurred")
+      setError("خطای غیرمنتظره‌ای رخ داد")
       console.error(err)
       setIsPending(false)
     }
@@ -49,20 +49,20 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>}
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">ایمیل</Label>
         <Input id="email" name="email" type="email" required />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">رمز عبور</Label>
         <Input id="password" name="password" type="password" required />
       </div>
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Logging in..." : "Login"}
+        {isPending ? "در حال ورود..." : "ورود"}
       </Button>
       <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
+        حساب کاربری ندارید؟{" "}
         <Link href="/register" className="text-blue-600 hover:underline">
-          Register
+          ثبت‌نام
         </Link>
       </div>
     </form>

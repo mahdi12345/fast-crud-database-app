@@ -9,7 +9,7 @@ export default async function AdminPage() {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
+      <h1 className="text-3xl font-bold mb-8">پنل مدیریت</h1>
       <UserManagement users={users} />
     </div>
   )

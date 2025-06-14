@@ -34,6 +34,7 @@ export interface Subscription {
   payment_amount: number | null
   payment_date: string | null
   notes: string | null
+  max_devices?: number
   created_at: string
   updated_at: string
   // Joined data
@@ -77,4 +78,5 @@ export interface CreatePlanData {
   price: number
   duration_days: number
   features: string[]
+  max_devices?: number
 }

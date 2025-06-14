@@ -37,15 +37,15 @@ export default function ProfileForm({ user }: ProfileFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        setProfileError(result.error || "Failed to update profile")
+        setProfileError(result.error || "به‌روزرسانی پروفایل ناموفق بود")
       } else {
         toast({
-          title: "Profile updated",
-          description: "Your profile information has been updated successfully.",
+          title: "پروفایل به‌روزرسانی شد",
+          description: "اطلاعات پروفایل شما با موفقیت به‌روزرسانی شد.",
         })
       }
     } catch (error) {
-      setProfileError("An unexpected error occurred. Please try again.")
+      setProfileError("خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.")
       console.error(error)
     } finally {
       setIsUpdating(false)
@@ -68,18 +68,18 @@ export default function ProfileForm({ user }: ProfileFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        setPasswordError(result.error || "Failed to update password")
+        setPasswordError(result.error || "به‌روزرسانی رمز عبور ناموفق بود")
       } else {
         toast({
-          title: "Password updated",
-          description: "Your password has been updated successfully.",
+          title: "رمز عبور به‌روزرسانی شد",
+          description: "رمز عبور شما با موفقیت به‌روزرسانی شد.",
         })
         // Reset password fields
         const form = document.getElementById("password-form") as HTMLFormElement
         if (form) form.reset()
       }
     } catch (error) {
-      setPasswordError("An unexpected error occurred. Please try again.")
+      setPasswordError("خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.")
       console.error(error)
     } finally {
       setIsUpdating(false)
@@ -89,31 +89,31 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   return (
     <Tabs defaultValue="info" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="info">Profile Information</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsTrigger value="info">اطلاعات پروفایل</TabsTrigger>
+        <TabsTrigger value="security">امنیت</TabsTrigger>
       </TabsList>
 
       <TabsContent value="info">
         <Card>
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Update your personal information here.</CardDescription>
+            <CardTitle>اطلاعات پروفایل</CardTitle>
+            <CardDescription>اطلاعات شخصی خود را در اینجا به‌روزرسانی کنید.</CardDescription>
           </CardHeader>
           <form onSubmit={handleProfileUpdate}>
             <CardContent className="space-y-4">
               {profileError && <div className="bg-red-50 text-red-500 p-3 rounded-md">{profileError}</div>}
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">نام</Label>
                 <Input id="name" name="name" defaultValue={user.name} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">ایمیل</Label>
                 <Input id="email" name="email" type="email" defaultValue={user.email} required />
               </div>
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? "Updating..." : "Update Profile"}
+                {isUpdating ? "در حال به‌روزرسانی..." : "به‌روزرسانی پروفایل"}
               </Button>
             </CardFooter>
           </form>
@@ -123,28 +123,28 @@ export default function ProfileForm({ user }: ProfileFormProps) {
       <TabsContent value="security">
         <Card>
           <CardHeader>
-            <CardTitle>Change Password</CardTitle>
-            <CardDescription>Update your password to keep your account secure.</CardDescription>
+            <CardTitle>تغییر رمز عبور</CardTitle>
+            <CardDescription>رمز عبور خود را برای حفظ امنیت حساب به‌روزرسانی کنید.</CardDescription>
           </CardHeader>
           <form onSubmit={handlePasswordUpdate} id="password-form">
             <CardContent className="space-y-4">
               {passwordError && <div className="bg-red-50 text-red-500 p-3 rounded-md">{passwordError}</div>}
               <div className="space-y-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
+                <Label htmlFor="currentPassword">رمز عبور فعلی</Label>
                 <Input id="currentPassword" name="currentPassword" type="password" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
+                <Label htmlFor="newPassword">رمز عبور جدید</Label>
                 <Input id="newPassword" name="newPassword" type="password" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Label htmlFor="confirmPassword">تأیید رمز عبور جدید</Label>
                 <Input id="confirmPassword" name="confirmPassword" type="password" required />
               </div>
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? "Updating..." : "Change Password"}
+                {isUpdating ? "در حال به‌روزرسانی..." : "تغییر رمز عبور"}
               </Button>
             </CardFooter>
           </form>

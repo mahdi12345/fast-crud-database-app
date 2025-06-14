@@ -40,24 +40,24 @@ export default function UserMenu({ user }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <User className="h-4 w-4" />
-          {user.name || "User"}
+          {user.name || "کاربر"}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>حساب من</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
         <Link href="/profile">
           <DropdownMenuItem className="cursor-pointer">
-            <Settings className="h-4 w-4 mr-2" />
-            Profile Settings
+            <Settings className="h-4 w-4 ml-2" />
+            تنظیمات پروفایل
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <button onClick={handleLogout} className="w-full flex items-center text-red-500 cursor-pointer">
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
+            <LogOut className="h-4 w-4 ml-2" />
+            خروج
           </button>
         </DropdownMenuItem>
       </DropdownMenuContent>

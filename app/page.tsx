@@ -11,10 +11,10 @@ export default async function Home() {
   return (
     <main className="container mx-auto py-10 px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Brand Management</h1>
+        <h1 className="text-3xl font-bold">مدیریت برندها</h1>
         {canCreateBrands && (
           <Link href="/brands/new">
-            <Button>Add New Brand</Button>
+            <Button>افزودن برند جدید</Button>
           </Link>
         )}
       </div>

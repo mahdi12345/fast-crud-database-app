@@ -9,7 +9,7 @@ export default async function ClientsPage() {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">Client Management</h1>
+      <h1 className="text-3xl font-bold mb-8">مدیریت مشتریان</h1>
       <ClientManagement clients={clients} />
     </div>
   )

@@ -55,22 +55,22 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to create client",
+          title: "خطا",
+          description: result.error || "ایجاد مشتری ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Client created successfully",
+          title: "موفقیت",
+          description: "مشتری با موفقیت ایجاد شد",
         })
         setCreateDialogOpen(false)
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create client",
+        title: "خطا",
+        description: "ایجاد مشتری ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -92,21 +92,21 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to update client status",
+          title: "خطا",
+          description: result.error || "به‌روزرسانی وضعیت مشتری ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Client status updated",
+          title: "موفقیت",
+          description: "وضعیت مشتری به‌روزرسانی شد",
         })
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update client status",
+        title: "خطا",
+        description: "به‌روزرسانی وضعیت مشتری ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -115,7 +115,7 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
   }
 
   const handleRegenerateApiKey = async (clientId: number) => {
-    if (!confirm("Are you sure you want to regenerate the API key? The old key will stop working immediately.")) {
+    if (!confirm("آیا مطمئن هستید که می‌خواهید کلید API را بازتولید کنید؟ کلید قدیمی فوراً کار نخواهد کرد.")) {
       return
     }
 
@@ -132,21 +132,21 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to regenerate API key",
+          title: "خطا",
+          description: result.error || "بازتولید کلید API ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "API key regenerated successfully",
+          title: "موفقیت",
+          description: "کلید API با موفقیت بازتولید شد",
         })
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to regenerate API key",
+        title: "خطا",
+        description: "بازتولید کلید API ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -158,13 +158,13 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
     try {
       await navigator.clipboard.writeText(text)
       toast({
-        title: "Copied",
-        description: "API key copied to clipboard",
+        title: "کپی شد",
+        description: "کلید API در کلیپ‌بورد کپی شد",
       })
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to copy to clipboard",
+        title: "خطا",
+        description: "کپی در کلیپ‌بورد ناموفق بود",
         variant: "destructive",
       })
     }
@@ -175,45 +175,45 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Clients</CardTitle>
-            <CardDescription>Manage clients and their API keys</CardDescription>
+            <CardTitle>مشتریان</CardTitle>
+            <CardDescription>مدیریت مشتریان و کلیدهای API آن‌ها</CardDescription>
           </div>
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                New Client
+                <Plus className="h-4 w-4 ml-2" />
+                مشتری جدید
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Create New Client</DialogTitle>
+                <DialogTitle>ایجاد مشتری جدید</DialogTitle>
                 <DialogDescription>
-                  Add a new client to the system. An API key will be generated automatically.
+                  مشتری جدیدی به سیستم اضافه کنید. کلید API به‌طور خودکار تولید خواهد شد.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateClient}>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Name *</Label>
-                    <Input id="name" name="name" required placeholder="Client name" />
+                    <Label htmlFor="name">نام *</Label>
+                    <Input id="name" name="name" required placeholder="نام مشتری" />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email">ایمیل *</Label>
                     <Input id="email" name="email" type="email" required placeholder="client@example.com" />
                   </div>
                   <div>
-                    <Label htmlFor="company">Company</Label>
-                    <Input id="company" name="company" placeholder="Company name" />
+                    <Label htmlFor="company">شرکت</Label>
+                    <Input id="company" name="company" placeholder="نام شرکت" />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" name="phone" placeholder="Phone number" />
+                    <Label htmlFor="phone">تلفن</Label>
+                    <Input id="phone" name="phone" placeholder="شماره تلفن" />
                   </div>
                 </div>
                 <DialogFooter className="mt-6">
                   <Button type="submit" disabled={isCreating}>
-                    {isCreating ? "Creating..." : "Create Client"}
+                    {isCreating ? "در حال ایجاد..." : "ایجاد مشتری"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -226,20 +226,20 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>API Key</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>نام</TableHead>
+                <TableHead>ایمیل</TableHead>
+                <TableHead>شرکت</TableHead>
+                <TableHead>کلید API</TableHead>
+                <TableHead>وضعیت</TableHead>
+                <TableHead>تاریخ ایجاد</TableHead>
+                <TableHead>عملیات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {clients.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    No clients found. Create your first client to get started.
+                    هیچ مشتری‌ای یافت نشد. اولین مشتری خود را ایجاد کنید.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -260,10 +260,10 @@ export default function ClientManagement({ clients }: ClientManagementProps) {
                     </TableCell>
                     <TableCell>
                       <Badge variant={client.is_active ? "default" : "secondary"}>
-                        {client.is_active ? "Active" : "Inactive"}
+                        {client.is_active ? "فعال" : "غیرفعال"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{new Date(client.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(client.created_at).toLocaleDateString("fa-IR")}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button

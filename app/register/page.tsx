@@ -12,7 +12,7 @@ export default async function RegisterPage() {
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-md">
-      <h1 className="text-3xl font-bold mb-8 text-center">Register</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">ثبت‌نام</h1>
       <RegisterForm />
     </div>
   )

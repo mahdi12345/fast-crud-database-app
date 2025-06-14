@@ -45,6 +45,21 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
     return "outline"
   }
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "فعال"
+      case "expired":
+        return "منقضی"
+      case "cancelled":
+        return "لغو شده"
+      case "suspended":
+        return "تعلیق"
+      default:
+        return status
+    }
+  }
+
   const handleCreateSubscription = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsCreating(true)
@@ -69,22 +84,22 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to create subscription",
+          title: "خطا",
+          description: result.error || "ایجاد اشتراک ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Subscription created successfully",
+          title: "موفقیت",
+          description: "اشتراک با موفقیت ایجاد شد",
         })
         setCreateDialogOpen(false)
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create subscription",
+        title: "خطا",
+        description: "ایجاد اشتراک ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -106,21 +121,21 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to update subscription status",
+          title: "خطا",
+          description: result.error || "به‌روزرسانی وضعیت اشتراک ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Subscription status updated",
+          title: "موفقیت",
+          description: "وضعیت اشتراک به‌روزرسانی شد",
         })
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update subscription status",
+        title: "خطا",
+        description: "به‌روزرسانی وضعیت اشتراک ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -145,21 +160,21 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
 
       if (!response.ok) {
         toast({
-          title: "Error",
-          description: result.error || "Failed to renew subscription",
+          title: "خطا",
+          description: result.error || "تمدید اشتراک ناموفق بود",
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Success",
-          description: "Subscription renewed successfully",
+          title: "موفقیت",
+          description: "اشتراک با موفقیت تمدید شد",
         })
         window.location.reload()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to renew subscription",
+        title: "خطا",
+        description: "تمدید اشتراک ناموفق بود",
         variant: "destructive",
       })
     } finally {
@@ -172,28 +187,28 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Subscriptions</CardTitle>
-            <CardDescription>Manage client subscriptions and billing</CardDescription>
+            <CardTitle>اشتراک‌ها</CardTitle>
+            <CardDescription>مدیریت اشتراک‌های مشتریان و صورتحساب</CardDescription>
           </div>
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                New Subscription
+                <Plus className="h-4 w-4 ml-2" />
+                اشتراک جدید
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Create New Subscription</DialogTitle>
-                <DialogDescription>Create a new subscription for a client</DialogDescription>
+                <DialogTitle>ایجاد اشتراک جدید</DialogTitle>
+                <DialogDescription>اشتراک جدیدی برای مشتری ایجاد کنید</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateSubscription}>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="client_id">Client</Label>
+                    <Label htmlFor="client_id">مشتری</Label>
                     <Select name="client_id" required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a client" />
+                        <SelectValue placeholder="مشتری را انتخاب کنید" />
                       </SelectTrigger>
                       <SelectContent>
                         {clients
@@ -207,10 +222,10 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="plan_id">Plan</Label>
+                    <Label htmlFor="plan_id">طرح</Label>
                     <Select name="plan_id" required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a plan" />
+                        <SelectValue placeholder="طرح را انتخاب کنید" />
                       </SelectTrigger>
                       <SelectContent>
                         {plans
@@ -224,21 +239,21 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="payment_amount">Payment Amount</Label>
+                    <Label htmlFor="payment_amount">مبلغ پرداخت</Label>
                     <Input id="payment_amount" name="payment_amount" type="number" step="0.01" placeholder="0.00" />
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch id="auto_renew" name="auto_renew" />
-                    <Label htmlFor="auto_renew">Auto-renew subscription</Label>
+                    <Label htmlFor="auto_renew">تمدید خودکار اشتراک</Label>
                   </div>
                   <div>
-                    <Label htmlFor="notes">Notes</Label>
-                    <Textarea id="notes" name="notes" placeholder="Optional notes about this subscription" />
+                    <Label htmlFor="notes">یادداشت‌ها</Label>
+                    <Textarea id="notes" name="notes" placeholder="یادداشت‌های اختیاری درباره این اشتراک" />
                   </div>
                 </div>
                 <DialogFooter className="mt-6">
                   <Button type="submit" disabled={isCreating}>
-                    {isCreating ? "Creating..." : "Create Subscription"}
+                    {isCreating ? "در حال ایجاد..." : "ایجاد اشتراک"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -251,20 +266,21 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Client</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>مشتری</TableHead>
+                <TableHead>طرح</TableHead>
+                <TableHead>کد</TableHead>
+                <TableHead>وضعیت</TableHead>
+                <TableHead>تاریخ انقضا</TableHead>
+                <TableHead>مبلغ</TableHead>
+                <TableHead>دستگاه‌ها</TableHead>
+                <TableHead>عملیات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {subscriptions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    No subscriptions found. Create your first subscription to get started.
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    هیچ اشتراکی یافت نشد. اولین اشتراک خود را ایجاد کنید.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -289,19 +305,25 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
                     </TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(subscription.status, subscription.end_date)}>
-                        {subscription.status.toUpperCase()}
+                        {getStatusLabel(subscription.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {new Date(subscription.end_date).toLocaleDateString()}
+                        {new Date(subscription.end_date).toLocaleDateString("fa-IR")}
                         {isSubscriptionExpired(subscription.end_date) && (
-                          <div className="text-red-500 text-xs">Expired</div>
+                          <div className="text-red-500 text-xs">منقضی شده</div>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       {subscription.payment_amount ? formatCurrency(subscription.payment_amount) : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <div>حداکثر: {subscription.max_devices || 1}</div>
+                        <div className="text-muted-foreground">فعال: -</div>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -314,10 +336,10 @@ export default function SubscriptionManagement({ subscriptions, clients, plans }
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="suspended">Suspended</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                            <SelectItem value="expired">Expired</SelectItem>
+                            <SelectItem value="active">فعال</SelectItem>
+                            <SelectItem value="suspended">تعلیق</SelectItem>
+                            <SelectItem value="cancelled">لغو شده</SelectItem>
+                            <SelectItem value="expired">منقضی</SelectItem>
                           </SelectContent>
                         </Select>
                         <Button

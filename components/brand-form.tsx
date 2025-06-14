@@ -38,7 +38,7 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
       router.push("/")
       router.refresh()
     } catch (err) {
-      setError("Failed to save brand. Please try again.")
+      setError("ذخیره برند ناموفق بود. لطفاً دوباره تلاش کنید.")
       console.error(err)
     } finally {
       setIsSubmitting(false)
@@ -49,15 +49,15 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {error && <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>}
       <div className="space-y-2">
-        <Label htmlFor="name">Brand Name</Label>
+        <Label htmlFor="name">نام برند</Label>
         <Input id="name" name="name" required defaultValue={brand?.name || ""} />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">توضیحات</Label>
         <Textarea id="description" name="description" rows={4} defaultValue={brand?.description || ""} />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="website">Website</Label>
+        <Label htmlFor="website">وب‌سایت</Label>
         <Input
           id="website"
           name="website"
@@ -68,11 +68,11 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
       </div>
       <div className="flex gap-4">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : brand ? "Update Brand" : "Create Brand"}
+          {isSubmitting ? "در حال ذخیره..." : brand ? "به‌روزرسانی برند" : "ایجاد برند"}
         </Button>
         <Link href="/">
           <Button variant="outline" type="button">
-            Cancel
+            انصراف
           </Button>
         </Link>
       </div>

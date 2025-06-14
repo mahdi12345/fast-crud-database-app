@@ -17,19 +17,19 @@ export default async function BrandList() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Website</TableHead>
-            <TableHead>Created At</TableHead>
-            {(canEdit || canDelete) && <TableHead className="text-right">Actions</TableHead>}
+            <TableHead>شناسه</TableHead>
+            <TableHead>نام</TableHead>
+            <TableHead>توضیحات</TableHead>
+            <TableHead>وب‌سایت</TableHead>
+            <TableHead>تاریخ ایجاد</TableHead>
+            {(canEdit || canDelete) && <TableHead className="text-right">عملیات</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
           {brands.length === 0 ? (
             <TableRow>
               <TableCell colSpan={canEdit || canDelete ? 6 : 5} className="text-center py-8 text-muted-foreground">
-                No brands found. {canEdit && "Add your first brand to get started."}
+                هیچ برندی یافت نشد. {canEdit && "اولین برند خود را اضافه کنید."}
               </TableCell>
             </TableRow>
           ) : (
@@ -50,7 +50,7 @@ export default async function BrandList() {
                     </a>
                   )}
                 </TableCell>
-                <TableCell>{new Date(brand.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>{new Date(brand.created_at).toLocaleDateString("fa-IR")}</TableCell>
                 {(canEdit || canDelete) && (
                   <TableCell className="text-right space-x-2">
                     {canEdit && (
