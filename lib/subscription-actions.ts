@@ -40,38 +40,41 @@ export async function updateSubscriptionPlan(id: number, data: Partial<CreatePla
   const values = []
 
   if (data.name) {
-    updates.push("name = $" + (values.length + 1))
+    updates.push(`name = $${values.length + 1}`)
     values.push(data.name)
   }
   if (data.description !== undefined) {
-    updates.push("description = $" + (values.length + 1))
+    updates.push(`description = $${values.length + 1}`)
     values.push(data.description)
   }
-  if (data.price) {
-    updates.push("price = $" + (values.length + 1))
+  if (data.price !== undefined) {
+    updates.push(`price = $${values.length + 1}`)
     values.push(data.price)
   }
-  if (data.duration_days) {
-    updates.push("duration_days = $" + (values.length + 1))
+  if (data.duration_days !== undefined) {
+    updates.push(`duration_days = $${values.length + 1}`)
     values.push(data.duration_days)
   }
+  if (data.max_devices !== undefined) {
+    updates.push(`max_devices = $${values.length + 1}`)
+    values.push(data.max_devices)
+  }
   if (data.features) {
-    updates.push("features = $" + (values.length + 1))
+    updates.push(`features = $${values.length + 1}`)
     values.push(JSON.stringify(data.features))
   }
 
   if (updates.length > 0) {
-    updates.push("updated_at = CURRENT_TIMESTAMP")
+    updates.push(`updated_at = CURRENT_TIMESTAMP`)
     values.push(id)
 
-    await sql.unsafe(
-      `
+    const query = `
       UPDATE subscription_plans 
       SET ${updates.join(", ")}
       WHERE id = $${values.length}
-    `,
-      values,
-    )
+    `
+
+    await sql.unsafe(query, values)
   }
 
   revalidatePath("/admin/plans")

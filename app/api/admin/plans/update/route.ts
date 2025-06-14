@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { updateSubscriptionPlan } from "@/lib/subscription-actions"
 import { getSession } from "@/lib/auth-utils"
 import { UserRole } from "@/lib/types"
 import { sql } from "@/lib/db"
@@ -17,8 +16,55 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 })
     }
 
-    const { id, ...data } = await request.json()
-    await updateSubscriptionPlan(id, data)
+    const { id, ...updateData } = await request.json()
+
+    if (!id) {
+      return NextResponse.json({ error: "Plan ID is required" }, { status: 400 })
+    }
+
+    // Build the update query dynamically
+    const updates = []
+    const values = []
+
+    if (updateData.name) {
+      updates.push(`name = $${values.length + 1}`)
+      values.push(updateData.name)
+    }
+    if (updateData.description !== undefined) {
+      updates.push(`description = $${values.length + 1}`)
+      values.push(updateData.description || null)
+    }
+    if (updateData.price !== undefined) {
+      updates.push(`price = $${values.length + 1}`)
+      values.push(updateData.price)
+    }
+    if (updateData.duration_days !== undefined) {
+      updates.push(`duration_days = $${values.length + 1}`)
+      values.push(updateData.duration_days)
+    }
+    if (updateData.max_devices !== undefined) {
+      updates.push(`max_devices = $${values.length + 1}`)
+      values.push(updateData.max_devices)
+    }
+    if (updateData.features) {
+      updates.push(`features = $${values.length + 1}`)
+      values.push(JSON.stringify(updateData.features))
+    }
+
+    if (updates.length === 0) {
+      return NextResponse.json({ error: "No data to update" }, { status: 400 })
+    }
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`)
+    values.push(id)
+
+    const query = `
+      UPDATE subscription_plans 
+      SET ${updates.join(", ")}
+      WHERE id = $${values.length}
+    `
+
+    await sql.unsafe(query, values)
 
     return NextResponse.json({ success: true })
   } catch (error) {
