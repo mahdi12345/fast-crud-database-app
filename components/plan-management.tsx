@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -39,8 +40,10 @@ interface PlanManagementProps {
   plans: SubscriptionPlan[]
 }
 
-export default function PlanManagement({ plans }: PlanManagementProps) {
+export default function PlanManagement({ plans: initialPlans }: PlanManagementProps) {
   const { toast } = useToast()
+  const router = useRouter()
+  const [plans, setPlans] = useState(initialPlans)
   const [isCreating, setIsCreating] = useState(false)
   const [isUpdating, setIsUpdating] = useState<number | null>(null)
   const [isDeleting, setIsDeleting] = useState<number | null>(null)
@@ -49,6 +52,18 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null)
   const [features, setFeatures] = useState<string[]>([""])
   const [editFeatures, setEditFeatures] = useState<string[]>([""])
+
+  const refreshPlans = async () => {
+    try {
+      const response = await fetch("/api/admin/plans")
+      if (response.ok) {
+        const newPlans = await response.json()
+        setPlans(newPlans)
+      }
+    } catch (error) {
+      console.error("Error refreshing plans:", error)
+    }
+  }
 
   const handleCreatePlan = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -86,7 +101,11 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
         })
         setCreateDialogOpen(false)
         setFeatures([""])
-        window.location.reload()
+        // Reset form
+        const form = event.currentTarget
+        form.reset()
+        // Refresh plans list
+        await refreshPlans()
       }
     } catch (error) {
       toast({
@@ -116,6 +135,8 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
       features: editFeatures.filter((f) => f.trim() !== ""),
     }
 
+    console.log("Updating plan with data:", data) // Debug log
+
     try {
       const response = await fetch("/api/admin/plans/update", {
         method: "PUT",
@@ -124,6 +145,7 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
       })
 
       const result = await response.json()
+      console.log("Update response:", result) // Debug log
 
       if (!response.ok) {
         toast({
@@ -138,9 +160,11 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
         })
         setEditDialogOpen(false)
         setEditingPlan(null)
-        window.location.reload()
+        // Refresh plans list
+        await refreshPlans()
       }
     } catch (error) {
+      console.error("Update error:", error) // Debug log
       toast({
         title: "خطا",
         description: "به‌روزرسانی طرح ناموفق بود",
@@ -174,7 +198,8 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
           title: "موفقیت",
           description: "طرح با موفقیت حذف شد",
         })
-        window.location.reload()
+        // Refresh plans list
+        await refreshPlans()
       }
     } catch (error) {
       toast({
@@ -210,7 +235,8 @@ export default function PlanManagement({ plans }: PlanManagementProps) {
           title: "موفقیت",
           description: "وضعیت طرح به‌روزرسانی شد",
         })
-        window.location.reload()
+        // Refresh plans list
+        await refreshPlans()
       }
     } catch (error) {
       toast({
