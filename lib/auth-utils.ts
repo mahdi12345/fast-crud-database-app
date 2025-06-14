@@ -55,7 +55,8 @@ export async function login(email: string, password: string, forceUpdate = false
     }
 
     // Set session cookie
-    cookies().set({
+    const cookieStore = await cookies()
+    cookieStore.set({
       name: "auth-session",
       value: encodeSession(sessionData),
       httpOnly: true,
@@ -74,11 +75,13 @@ export async function login(email: string, password: string, forceUpdate = false
 }
 
 export async function logout() {
-  cookies().delete("auth-session")
+  const cookieStore = await cookies()
+  cookieStore.delete("auth-session")
 }
 
 export async function getSession() {
-  const sessionCookie = cookies().get("auth-session")
+  const cookieStore = await cookies()
+  const sessionCookie = cookieStore.get("auth-session")
 
   if (!sessionCookie) {
     return null
@@ -88,7 +91,7 @@ export async function getSession() {
 
   // Check if session has expired
   if (!session || session.exp < Math.floor(Date.now() / 1000)) {
-    cookies().delete("auth-session")
+    cookieStore.delete("auth-session")
     return null
   }
 
