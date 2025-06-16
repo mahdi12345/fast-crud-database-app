@@ -153,7 +153,7 @@ export async function createSession(
       AND expires_at > CURRENT_TIMESTAMP
     `
 
-    if (activeSessionsOtherDevices[0].count > 0) {
+    if (activeSessionsOtherDevices[0].count > 4) {
       return {
         success: false,
         error: "اشتراک شما در دستگاه دیگری فعال است. لطفاً ابتدا از دستگاه دیگر خارج شوید.",
